@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Equipes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Login</h2>
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="login" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="senha" class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="senha" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Section (hidden initially) -->
+    <div id="mainContent" class="container mt-4" style="display: none;">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Sistema de Equipes</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('equipesSection')">Equipes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('jogadoresSection')">Jogadores</a>
+                        </li>
+                    </ul>
+                    <button class="btn btn-light" onclick="logout()">Sair</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Equipes Section -->
+        <div id="equipesSection" class="section">
+            <h2>Gerenciar Equipes</h2>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Nova Equipe</h3>
+                            <form id="equipeForm">
+                                <div class="mb-3">
+                                    <label for="nomeEquipe" class="form-label">Nome da Equipe</label>
+                                    <input type="text" class="form-control" id="nomeEquipe" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nomeTecnico" class="form-label">Nome do Técnico</label>
+                                    <input type="text" class="form-control" id="nomeTecnico" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="telefoneTecnico" class="form-label">Telefone do Técnico</label>
+                                    <input type="tel" class="form-control" id="telefoneTecnico" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Cadastrar Equipe</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Equipes Cadastradas</h3>
+                            <div id="equipesList" class="list-group">
+                                <!-- Equipes will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jogadores Section -->
+        <div id="jogadoresSection" class="section" style="display: none;">
+            <h2>Gerenciar Jogadores</h2>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Novo Jogador</h3>
+                            <form id="jogadorForm">
+                                <div class="mb-3">
+                                    <label for="nomeJogador" class="form-label">Nome do Jogador</label>
+                                    <input type="text" class="form-control" id="nomeJogador" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="camisa" class="form-label">Número da Camisa</label>
+                                    <input type="number" class="form-control" id="camisa" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nascimento" class="form-label">Data de Nascimento</label>
+                                    <input type="date" class="form-control" id="nascimento" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="altura" class="form-label">Altura (cm)</label>
+                                    <input type="number" class="form-control" id="altura" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="genero" class="form-label">Gênero</label>
+                                    <select class="form-control" id="genero" required>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Feminino</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="posicao" class="form-label">Posição</label>
+                                    <input type="text" class="form-control" id="posicao" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="idEquipe" class="form-label">Equipe</label>
+                                    <select class="form-control" id="idEquipe" required>
+                                        <!-- Equipes will be listed here -->
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Cadastrar Jogador</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">Jogadores Cadastrados</h3>
+                            <div id="jogadoresList" class="list-group">
+                                <!-- Jogadores will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
