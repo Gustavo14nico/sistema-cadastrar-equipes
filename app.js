@@ -212,4 +212,6 @@ function validarTelefone(telefone) {
     return telefone.length != 11 ? false : true;
 }
 
-app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
+// app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
+
+module.exports = app; // Vercel
