@@ -155,24 +155,44 @@ async function loadEquipes() {
 
 async function loadJogadores() {
     try {
-        const response = await fetch(`/listar/jogadores`, {
-            credentials: 'include'
-        });
+        const [equipesResponse, jogadoresResponse] = await Promise.all([
+            fetch(`/listar/equipes`, { credentials: 'include' }),
+            fetch(`/listar/jogadores`, { credentials: 'include' })
+        ]);
 
-        const data = await response.json();
+        const equipesData = await equipesResponse.json();
+        const jogadoresData = await jogadoresResponse.json();
 
-        if (response.ok) {
-            const jogadores = data.msg;
-            
-            jogadoresList.innerHTML = jogadores.map(jogador => `
-                <div class="list-group-item">
-                    <h5>${jogador.nome}</h5>
-                    <p class="mb-1">Camisa: ${jogador.camisa}</p>
-                    <p class="mb-1">Posição: ${jogador.posicao}</p>
-                    <p class="mb-1">Altura: ${jogador.altura}cm</p>
-                    <small>Gênero: ${jogador.genero === 'M' ? 'Masculino' : 'Feminino'}</small>
-                </div>
-            `).join('');
+        if (equipesResponse.ok && jogadoresResponse.ok) {
+            const equipes = equipesData.msg;
+            const jogadores = jogadoresData.msg;
+
+            // Agrupar jogadores por equipe
+            const jogadoresPorEquipe = equipes.map(equipe => {
+                const jogadoresDaEquipe = jogadores.filter(j => j.id_equipe === equipe.id);
+
+                return {
+                    equipeNome: equipe.nome,
+                    jogadores: jogadoresDaEquipe
+                };
+            });
+
+            // Renderizar no HTML
+            jogadoresList.innerHTML = jogadoresPorEquipe.map(grupo => {
+                return `
+                    <div class="list-group-item">
+                        <h4>${grupo.equipeNome}</h4>
+                        ${grupo.jogadores.length === 0 ? '<p><i>Sem jogadores ainda</i></p>' : ''}
+                        <ul>
+                            ${grupo.jogadores.map(j => `
+                                <li>
+                                    <strong>${j.nome}</strong> (Camisa ${j.camisa}, ${j.posicao}, ${j.altura}cm, ${j.genero === 'M' ? 'Masculino' : 'Feminino'})
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }).join('');
         }
     } catch (error) {
         console.error('Erro ao carregar jogadores:', error);
@@ -203,7 +223,6 @@ function showSection(sectionId) {
     document.getElementById(sectionId).style.display = 'block';
 }
 
-// Check if user is already logged in
 async function checkAuth() {
     try {
         const response = await fetch(`/listar/equipes`, {
