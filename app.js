@@ -31,7 +31,10 @@ app.use(session({
 // Simulando tabelas de um banco de dados
 const equipes  = [];
 const jogadores = [];
-const contas = [{login: "admin@gmail.com", senha: "senha123"}];
+const contas = [
+    { login: "admin@gmail.com", senha: "senha123", last_access: null },
+    { login: "test@example.com", senha: "password123", last_access: null }
+];
 
 // Rotas pública
 app.post("/login", (req, res) => {
@@ -54,9 +57,12 @@ app.post("/login", (req, res) => {
 
         req.session.user = { login: conta.login };
 
-        res.cookie('ultimoAcesso', new Date().toISOString(), { maxAge: 1000 * 60 * 60 * 24 });
+        const now = new Date().toISOString();
+        conta.last_access = now;
 
-        return res.status(200).json({ msg: "Logado com sucesso!" });
+        res.cookie('ultimoAcesso', now, { maxAge: 1000 * 60 * 60 * 24 });
+
+        return res.status(200).json({ msg: "Logado com sucesso!", last_access: now });
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: "Ocorreu um erro por parte do servidor!" });
@@ -64,6 +70,17 @@ app.post("/login", (req, res) => {
 });
 
 // Rotas privada
+// Check o login
+app.get("/check_login", (req, res) => {
+    if (req.session.user) {
+        const userEmail = req.session.user.login;
+        const userAccount = contas.find(c => c.login === userEmail);
+        const lastAccess = userAccount ? userAccount.last_access : null;
+        return res.status(200).json({ msg: "Autenticado", last_access: lastAccess });
+    }
+    return res.status(401).json({ msg: "Não autenticado" });
+});
+
 // Cadastros 
 app.post("/cadastrar/equipe", autenticado, (req, res) => {
     if(!required(req, ['nome', 'nome_tecnico', 'telefone_tecnico'])) {
@@ -179,8 +196,12 @@ app.get("/listar/equipes", autenticado, (req, res) => {
 
 // Rota sair
 app.post("/logout", autenticado, (req, res) => {
-    req.session.destroy(() => {
-        res.clearCookie('connect.sid');
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Erro ao destruir sessão:", err);
+            return res.status(500).json({ msg: "Erro ao fazer logout." });
+        }
+        res.clearCookie('connect.sid'); // Limpa o cookie da sessão
         res.json({ msg: "Logout realizado com sucesso!" });
     });
 });

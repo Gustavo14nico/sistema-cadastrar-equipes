@@ -7,6 +7,7 @@ const jogadorForm = document.getElementById('jogadorForm');
 const equipesList = document.getElementById('equipesList');
 const jogadoresList = document.getElementById('jogadoresList');
 const idEquipeSelect = document.getElementById('idEquipe');
+const lastAccessDisplay = document.getElementById('lastAccessDisplay'); // New DOM element
 
 // Event Listeners
 loginForm.addEventListener('submit', handleLogin);
@@ -35,6 +36,10 @@ async function handleLogin(e) {
         if (response.ok) {
             loginSection.style.display = 'none';
             mainContent.style.display = 'block';
+            if (data.last_access) { // Assuming your backend sends last_access on login
+                const date = new Date(data.last_access);
+                lastAccessDisplay.textContent = `Último acesso: ${date.toLocaleString()}`;
+            }
             loadEquipes();
             loadJogadores();
         } else {
@@ -133,7 +138,6 @@ async function loadEquipes() {
         if (response.ok) {
             const equipes = data.msg;
             
-            // Update equipes list
             equipesList.innerHTML = equipes.map(equipe => `
                 <div class="list-group-item">
                     <h5>${equipe.nome}</h5>
@@ -143,7 +147,6 @@ async function loadEquipes() {
                 </div>
             `).join('');
 
-            // Update equipe select for jogadores
             idEquipeSelect.innerHTML = equipes.map(equipe => `
                 <option value="${equipe.id}">${equipe.nome}</option>
             `).join('');
@@ -210,6 +213,7 @@ async function logout() {
             mainContent.style.display = 'none';
             loginSection.style.display = 'block';
             loginForm.reset();
+            lastAccessDisplay.textContent = ''; 
         }
     } catch (error) {
         console.error('Erro ao fazer logout:', error);
@@ -225,20 +229,31 @@ function showSection(sectionId) {
 
 async function checkAuth() {
     try {
-        const response = await fetch(`/listar/equipes`, {
+
+        const response = await fetch(`/check_login`, {
             credentials: 'include'
         });
+
+        const data = await response.json();
 
         if (response.ok) {
             loginSection.style.display = 'none';
             mainContent.style.display = 'block';
+            if (data.last_access) { 
+                const date = new Date(data.last_access);
+                lastAccessDisplay.textContent = `Último acesso: ${date.toLocaleString()}`;
+            }
             loadEquipes();
             loadJogadores();
+        } else {
+            loginSection.style.display = 'block';
+            mainContent.style.display = 'none';
         }
     } catch (error) {
         console.error('Erro ao verificar autenticação:', error);
+        loginSection.style.display = 'block';
+        mainContent.style.display = 'none';
     }
 }
 
-// Check authentication on page load
-checkAuth(); 
+checkAuth();
