@@ -25,7 +25,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,               // true para produção (https)
+        secure: false,
         httpOnly: true,
         sameSite: 'lax',
         maxAge: 1000 * 60 * 30      // 30 minutos
@@ -185,13 +185,13 @@ app.use((req, res) => {
 
 // Middleware autenticado
 function autenticado(req, res, next) {
+    console.log('Sessão:', req.session);
     if (req.session.user) {
         next();
     } else {
         return res.status(401).json({ msg: "Não autorizado, faça login!" });
     }
 }
-
 // Funções auxiliares
 function required(request, campos) {
     return campos.every(campo => request.body && request.body[campo]);
