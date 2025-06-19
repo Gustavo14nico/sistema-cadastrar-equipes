@@ -1,17 +1,17 @@
 const express = require("express");
-const cors = require("cors"); // Cors para liberar o acesso
+// const cors = require("cors"); // Cors para liberar o acesso
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const path = require('path');
 
 const app = express();
 const PORT = 8080;
-const corsOptions = {
-  origin: "http://127.0.0.1:3000", 
-  credentials: true
-};
+// const corsOptions = {
+//   origin: "http://127.0.0.1:3000", 
+//   credentials: true
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'page')));
@@ -21,9 +21,9 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: false,
+        secure: true,               
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'lax', 
         maxAge: 1000 * 60 * 30 
     }
 }));
